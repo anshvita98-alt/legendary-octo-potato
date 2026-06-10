@@ -5,9 +5,16 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 import { Icons } from "@/components/icons";
 import { cn } from "@/lib/utils";
-import { Gem, Menu, User, Wallet } from "lucide-react";
+import { Gem, Menu, User, Wallet, LogOut, Copy, Check } from "lucide-react";
 import { useWallet } from "../wallet-provider";
 
 const navLinks = [
@@ -20,9 +27,18 @@ const navLinks = [
 export default function Header() {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [copiedAddress, setCopiedAddress] = useState(false);
   const { isConnected, address, connectWallet, disconnectWallet } = useWallet();
 
   const truncateAddress = (addr: `0x${string}`) => `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+
+  const handleCopyAddress = () => {
+    if (address) {
+      navigator.clipboard.writeText(address);
+      setCopiedAddress(true);
+      setTimeout(() => setCopiedAddress(false), 2000);
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur-sm">
@@ -48,10 +64,40 @@ export default function Header() {
         <div className="flex items-center gap-4">
           <div className="hidden md:block">
             {isConnected && address ? (
-              <Button onClick={disconnectWallet} variant="outline">
-                <User className="mr-2 h-4 w-4" />
-                {truncateAddress(address)}
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="gap-2">
+                    <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                    <Wallet className="h-4 w-4" />
+                    {truncateAddress(address)}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <div className="px-2 py-1.5 text-sm">
+                    <p className="text-xs text-muted-foreground">Connected Address</p>
+                    <p className="font-mono text-sm font-semibold break-all">{address}</p>
+                  </div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleCopyAddress}>
+                    {copiedAddress ? (
+                      <>
+                        <Check className="mr-2 h-4 w-4" />
+                        <span>Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="mr-2 h-4 w-4" />
+                        <span>Copy Address</span>
+                      </>
+                    )}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={disconnectWallet} className="text-red-500 focus:text-red-500">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Disconnect</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : (
               <Button onClick={connectWallet}>
                 <Wallet className="mr-2 h-4 w-4" />
@@ -90,18 +136,58 @@ export default function Header() {
                     </Link>
                   ))}
                 </nav>
-                <div className="mt-auto">
-                 {isConnected && address ? (
-                    <Button onClick={() => {disconnectWallet(); setIsMobileMenuOpen(false);}} variant="secondary" className="w-full">
-                        <User className="mr-2 h-4 w-4" />
-                        {truncateAddress(address)}
+                <div className="mt-auto space-y-3">
+                  {isConnected && address ? (
+                    <>
+                      <div className="bg-secondary p-3 rounded-lg">
+                        <p className="text-xs text-muted-foreground mb-2">Connected Address</p>
+                        <p className="font-mono text-sm font-semibold break-all mb-3">{address}</p>
+                        <div className="flex gap-2">
+                          <Button
+                            onClick={handleCopyAddress}
+                            variant="outline"
+                            size="sm"
+                            className="flex-1 text-xs"
+                          >
+                            {copiedAddress ? (
+                              <>
+                                <Check className="mr-1 h-3 w-3" />
+                                Copied!
+                              </>
+                            ) : (
+                              <>
+                                <Copy className="mr-1 h-3 w-3" />
+                                Copy
+                              </>
+                            )}
+                          </Button>
+                          <Button
+                            onClick={() => {
+                              disconnectWallet();
+                              setIsMobileMenuOpen(false);
+                            }}
+                            variant="destructive"
+                            size="sm"
+                            className="flex-1 text-xs"
+                          >
+                            <LogOut className="mr-1 h-3 w-3" />
+                            Disconnect
+                          </Button>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <Button
+                      onClick={() => {
+                        connectWallet();
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="w-full"
+                    >
+                      <Wallet className="mr-2 h-4 w-4" />
+                      Connect Wallet
                     </Button>
-                    ) : (
-                    <Button onClick={() => {connectWallet(); setIsMobileMenuOpen(false);}} className="w-full">
-                        <Wallet className="mr-2 h-4 w-4" />
-                        Connect Wallet
-                    </Button>
-                    )}
+                  )}
                 </div>
               </div>
             </SheetContent>
