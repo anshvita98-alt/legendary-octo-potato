@@ -19,18 +19,15 @@ export default function Footer() {
             <Link href="/admin" className="text-sm text-muted-foreground hover:text-primary transition-colors">
               Admin
             </Link>
-            <a href="https://github.com/Deadwei9ht-maker/LegacyVault" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-              GitHub
-            </a>
-            <a href="mailto:Deadwei9ht-maker@example.com" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+            <a href="https://thehouseofjoshi.com/contact" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-primary transition-colors">
               Contact
             </a>
-            <Link href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+            <a href="https://thehouseofjoshi.com/terms" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-primary transition-colors">
               Terms of Service
-            </Link>
-            <Link href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+            </a>
+            <a href="https://thehouseofjoshi.com/privacy" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-primary transition-colors">
               Privacy Policy
-            </Link>
+            </a>
           </div>
         </div>
       </div>
